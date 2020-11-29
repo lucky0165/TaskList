@@ -97,5 +97,53 @@ class CategoryViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let action = UIContextualAction(style: .normal, title: "Edit") { (action, view, completionHandler) in
+            
+            var textField = UITextField()
+            
+            let categoryToEdit = self.categories[indexPath.row]
+  
+            let alert = UIAlertController(title: "Edit category", message: "", preferredStyle: .alert)
+            
+            alert.addTextField { (editTextField) in
+                editTextField.placeholder = "New category name"
+                textField = editTextField
+            }
+            
+            let save = UIAlertAction(title: "Save", style: .default) { (action) in
+                categoryToEdit.name = textField.text
+                self.saveCategories()
+                self.loadCategories()
+            }
+            
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            
+            alert.addAction(save)
+            alert.addAction(cancel)
+            
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+        
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+            
+            let categoryToRemove = self.categories[indexPath.row]
+            self.context.delete(categoryToRemove)
+            self.categories.remove(at: indexPath.row)
+            
+            self.saveCategories()
+            self.loadCategories()
+        }
+        
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+    
 }
 
